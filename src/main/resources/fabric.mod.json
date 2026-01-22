@@ -3,13 +3,13 @@
 	"id": "hudk",
 	"version": "${version}",
 	"name": "Hud Keys",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Shows key presses on the in-game HUD (displays keybind names and states).",
 	"authors": [
-		"Me!"
+		"AlexTGG"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/AlexTGG/Hud-Keys",
+		"sources": "https://github.com/AlexTGG/Hud-Keys"
 	},
 	"license": "GPL-3.0-or-later",
 	"icon": "assets/hudk/icon.png",
