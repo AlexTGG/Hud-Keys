@@ -8,8 +8,9 @@
 		"AlexTGG"
 	],
 	"contact": {
-		"homepage": "https://github.com/AlexTGG/Hud-Keys",
-		"sources": "https://github.com/AlexTGG/Hud-Keys"
+		"homepage": "https://modrinth.com/mod/hud-keys",
+		"sources": "https://github.com/AlexTGG/Hud-Keys",
+		"issues": "https://github.com/AlexTGG/Hud-Keys/issues"
 	},
 	"license": "GPL-3.0-or-later",
 	"icon": "assets/hudk/icon.png",
