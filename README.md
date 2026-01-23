@@ -2,6 +2,7 @@
 
 A small Fabric mod that shows keybinds on-screen (MOBA-style visible key binds near the hotbar).
 This is my first mod and was only made because I couldn't find any mods that did the same thing. All improvement recommendations are welcome!
+(I know it isn't perfect and it has lots of room for improvement)
 
 
 ## Features
