@@ -11,6 +11,9 @@ This is my first mod and was only made because I couldn't find any mods that did
 ## Planned Features
 - Add customization options
 
+## Modrinth
+https://modrinth.com/mod/hud-keys
+
 ## Installation
 1. Install Fabric Loader (matching the mod's Minecraft target) and Fabric API.
 2. Drop the mod JAR into your `mods/` folder.
