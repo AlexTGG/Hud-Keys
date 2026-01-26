@@ -8,7 +8,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.particle.BlockLeakParticle;
 
-import javax.swing.text.JTextComponent;
 
 public class HudKeysClient implements ClientModInitializer {
 	@Override
@@ -90,12 +89,12 @@ public class HudKeysClient implements ClientModInitializer {
 
 		if (label.contains(" ")) {
 			String[] parts = label.split(" ");
-			String result = "";
+			StringBuilder result = new StringBuilder();
 			for (String part : parts) {
-				if (!part.isEmpty()) result += part.charAt(0);
+				if (!part.isEmpty()) result.append(part.charAt(0));
 			}
-			if (result.length() > 2) result = result.substring(0, 2);
-			return result.toUpperCase();
+			if (result.length() > 2) result = new StringBuilder(result.substring(0, 2));
+			return result.toString().toUpperCase();
 		}
 
 		if (label.length() > 2) {
