@@ -43,8 +43,8 @@ public class HudKeysClient implements ClientModInitializer {
 	}
 	private void renderKey(DrawContext context, KeyBinding key, int x, int y) {
 		boolean isPressed = key.isPressed();
-		String label = key.getBoundKeyLocalizedText().getString();
-
+		String originalLabel = key.getBoundKeyLocalizedText().getString();
+		String label = getShortLabel(originalLabel);
 		//background color light gray/dark gray
 		int backgroundColor = isPressed ? 0x30404040 : 0x30808080;
 
@@ -71,6 +71,38 @@ public class HudKeysClient implements ClientModInitializer {
 		renderOutlinedText(context, label, 0, -4);
 
 		context.getMatrices().popMatrix();
+	}
+
+	private String getShortLabel(String label) {
+		if (label.contains("Shift")) return label.contains("Right") ? "RS" : "LS";
+		if (label.contains("Control")) return label.contains("Right") ? "RC" : "LC";
+		if (label.contains("Alt")) return label.contains("Right") ? "RA" : "LA";
+		if (label.equalsIgnoreCase("Space")) return "Sp";
+		if (label.equalsIgnoreCase("Tab")) return "Tb";
+		if (label.equalsIgnoreCase("Enter")) return "En";
+		if (label.equalsIgnoreCase("Backspace")) return "Bk";
+		if (label.equalsIgnoreCase("Caps Lock")) return "CL";
+
+		if (label.contains("Mouse")) {
+			String number = label.replaceAll("[^0-9]", ""); // Κρατάμε μόνο τους αριθμούς
+			if (!number.isEmpty()) return "M" + number;
+		}
+
+		if (label.contains(" ")) {
+			String[] parts = label.split(" ");
+			String result = "";
+			for (String part : parts) {
+				if (!part.isEmpty()) result += part.charAt(0);
+			}
+			if (result.length() > 2) result = result.substring(0, 2);
+			return result.toUpperCase();
+		}
+
+		if (label.length() > 2) {
+			return label.substring(0, 2);
+		}
+
+		return label;
 	}
 
 	private void renderRoundedRect(DrawContext context, int x, int y, int width, int height, int color){
