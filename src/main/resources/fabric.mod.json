@@ -21,14 +21,12 @@
 		],
 		"client": [
 			"hudkeys.hudk.HudKeysClient"
+		],
+		"modmenu": [
+			"hudkeys.hudk.integration.ModMenuIntegration"
 		]
 	},
 	"mixins": [
-		"hudk.mixins.json",
-		{
-			"config": "hudk.client.mixins.json",
-			"environment": "client"
-		}
 	],
 	"depends": {
 		"fabricloader": ">=0.18.4",
@@ -36,4 +34,5 @@
 		"java": ">=21",
 		"fabric-api": "*"
 	}
+
 }
