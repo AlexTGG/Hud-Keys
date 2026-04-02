@@ -20,17 +20,17 @@ public class ModMenuIntegration implements ModMenuApi {
             ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
             // X Offset
-            general.addEntry(entryBuilder.startIntField(Text.literal("X Offset"), HudConfig.xOffset)
+            general.addEntry(entryBuilder.startIntField(Text.literal("X Offset"), HudConfig.getInstance().xOffset)
                     .setDefaultValue(0)
                     .setTooltip(Text.literal("0 is default. Negative moves left, Positive moves right."))
-                    .setSaveConsumer(newValue -> HudConfig.xOffset = newValue)
+                    .setSaveConsumer(newValue -> HudConfig.getInstance().xOffset = newValue)
                     .build());
 
             // Y Offset
-            general.addEntry(entryBuilder.startIntField(Text.literal("Y Offset"), HudConfig.yOffset)
+            general.addEntry(entryBuilder.startIntField(Text.literal("Y Offset"), HudConfig.getInstance().yOffset)
                     .setDefaultValue(0)
                     .setTooltip(Text.literal("0 is default. Negative moves up, Positive moves down."))
-                    .setSaveConsumer(newValue -> HudConfig.yOffset = newValue)
+                    .setSaveConsumer(newValue -> HudConfig.getInstance().yOffset = newValue)
                     .build());
 
             builder.setSavingRunnable(() -> {
