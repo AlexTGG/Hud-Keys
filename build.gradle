@@ -1,6 +1,20 @@
+buildscript {
+	repositories {
+		maven { url = "https://maven.fabricmc.net/" }
+	}
+	dependencies {
+		classpath "net.fabricmc:fabric-loom:${project.loom_version}"
+	}
+}
+
 plugins {
-	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
+}
+
+if (project.minecraft_version.startsWith("1.21")) {
+	apply plugin: 'net.fabricmc.fabric-loom-remap'
+} else {
+	apply plugin: 'net.fabricmc.fabric-loom'
 }
 
 version = project.mod_version
@@ -29,16 +43,23 @@ loom {
 			sourceSet sourceSets.client
 		}
 	}
-
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
-	api ("me.shedaniel.cloth:cloth-config-fabric:26.1.154")
+	if (project.minecraft_version.startsWith("1.21")) {
+		mappings loom.officialMojangMappings()
+		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+		modApi ("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}")
+	} else {
+		implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+		implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+		implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+		api ("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}")
+	}
 }
 
 processResources {
@@ -49,8 +70,11 @@ processResources {
 	}
 }
 
+def javaVersionNum = project.minecraft_version.startsWith("1.21") ? 21 : 25
+def jVersion = project.minecraft_version.startsWith("1.21") ? JavaVersion.VERSION_21 : JavaVersion.VERSION_25
+
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 25
+	it.options.release = javaVersionNum
 }
 
 java {
@@ -59,8 +83,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_25
-	targetCompatibility = JavaVersion.VERSION_25
+	sourceCompatibility = jVersion
+	targetCompatibility = jVersion
 }
 
 jar {

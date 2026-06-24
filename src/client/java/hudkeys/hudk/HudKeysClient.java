@@ -3,10 +3,17 @@ package hudkeys.hudk;
 import hudkeys.hudk.config.HudConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.option.KeyBinding;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+//? if <=1.21.11 {
+/*import net.minecraft.client.gui.GuiGraphics;
+*///?} else {
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+//?}
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 
 public class HudKeysClient implements ClientModInitializer {
 
@@ -19,15 +26,18 @@ public class HudKeysClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
-			renderHud(drawContext);
-		});
+		HudElementRegistry.attachElementAfter(
+				VanillaHudElements.HOTBAR,
+				Identifier.fromNamespaceAndPath("hudk", "key_overlay"),
+				(graphics, deltaTracker) -> renderHud(graphics)
+		);
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			if (client.player == null) return;
+			if (client.player == null)
+				return;
 			currentTick++;
 
-			boolean isAttackPressed = client.options.attackKey.isPressed();
+			boolean isAttackPressed = client.options.keyAttack.isDown();
 			if (isAttackPressed && !wasAttackPressed) {
 				lastAttackTick = currentTick;
 				if (currentTick - lastSwapTick <= 1) {
@@ -48,17 +58,23 @@ public class HudKeysClient implements ClientModInitializer {
 			}
 
 			for (int i = 0; i < 9; i++) {
-				if (greenFlashTicks[i] > 0) greenFlashTicks[i]--;
+				if (greenFlashTicks[i] > 0)
+					greenFlashTicks[i]--;
 			}
 		});
 	}
 
-	private void renderHud(DrawContext context) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if(client.player == null || client.options.hudHidden) return;
+	//? if <=1.21.11 {
+	/*private void renderHud(GuiGraphics context) {
+	*///?} else {
+	private void renderHud(GuiGraphicsExtractor context) {
+	//?}
+		Minecraft client = Minecraft.getInstance();
+		if (client.player == null || client.options.hideGui)
+			return;
 
-		int width = client.getWindow().getScaledWidth();
-		int height = client.getWindow().getScaledHeight();
+		int width = client.getWindow().getGuiScaledWidth();
+		int height = client.getWindow().getGuiScaledHeight();
 
 		HudConfig config = HudConfig.getInstance();
 
@@ -69,15 +85,19 @@ public class HudKeysClient implements ClientModInitializer {
 		int y = baseY + config.yOffset;
 
 		for (int i = 0; i < 9; i++) {
-			KeyBinding key = client.options.hotbarKeys[i];
+			KeyMapping key = client.options.keyHotbarSlots[i];
 			int x = startX + (i * 20);
 			renderKey(context, key, x, y, i);
 		}
 	}
 
-	private void renderKey(DrawContext context, KeyBinding key, int x, int y, int slotIndex) {
-		boolean isPressed = key.isPressed();
-		String label = key.getBoundKeyLocalizedText().getString();
+	//? if <=1.21.11 {
+	/*private void renderKey(GuiGraphics context, KeyMapping key, int x, int y, int slotIndex) {
+	*///?} else {
+	private void renderKey(GuiGraphicsExtractor context, KeyMapping key, int x, int y, int slotIndex) {
+	//?}
+		boolean isPressed = key.isDown();
+		String label = key.getTranslatedKeyMessage().getString();
 
 		int backgroundColor;
 		if (greenFlashTicks[slotIndex] > 0) {
@@ -94,32 +114,49 @@ public class HudKeysClient implements ClientModInitializer {
 
 		float scale = HudConfig.getInstance().scale;
 
-		context.getMatrices().pushMatrix();
-		context.getMatrices().translate(x + (boxSize / 2f), y + (boxSize / 2f) + 1);
-		context.getMatrices().scale(scale, scale);
+		context.pose().pushMatrix();
+		context.pose().translate(x + (boxSize / 2f), y + (boxSize / 2f) + 1);
+		context.pose().scale(scale, scale);
 
 		renderOutlinedText(context, label, 0, -4);
 
-		context.getMatrices().popMatrix();
+		context.pose().popMatrix();
 	}
 
-	private void renderRoundedRect(DrawContext context, int x, int y, int width, int height, int color) {
+	//? if <=1.21.11 {
+	/*private void renderRoundedRect(GuiGraphics context, int x, int y, int width, int height, int color) {
+	*///?} else {
+	private void renderRoundedRect(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
+	//?}
 		context.fill(x + 1, y, x + width - 1, y + height, color);
 		context.fill(x + 1, y, x + width - 1, y + height, color);
 		context.fill(x, y + 1, x + 1, y + height - 1, color);
 		context.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
 	}
 
-	private void renderOutlinedText(DrawContext context, String text, int x, int y) {
-		MinecraftClient client = MinecraftClient.getInstance();
+	//? if <=1.21.11 {
+	/*private void renderOutlinedText(GuiGraphics context, String text, int x, int y) {
+	*///?} else {
+	private void renderOutlinedText(GuiGraphicsExtractor context, String text, int x, int y) {
+	//?}
+		Minecraft client = Minecraft.getInstance();
 		int outlineColor = 0xFF000000;
 		int textColor = 0xFFFFFFFF;
 
-		context.drawCenteredTextWithShadow(client.textRenderer, text, x - 1, y, outlineColor);
-		context.drawCenteredTextWithShadow(client.textRenderer, text, x + 1, y, outlineColor);
-		context.drawCenteredTextWithShadow(client.textRenderer, text, x, y - 1, outlineColor);
-		context.drawCenteredTextWithShadow(client.textRenderer, text, x, y + 1, outlineColor);
+		//? if <=1.21.11 {
+		/*context.drawCenteredString(client.font, text, x - 1, y, outlineColor);
+		context.drawCenteredString(client.font, text, x + 1, y, outlineColor);
+		context.drawCenteredString(client.font, text, x, y - 1, outlineColor);
+		context.drawCenteredString(client.font, text, x, y + 1, outlineColor);
+		
+		context.drawCenteredString(client.font, text, x, y, textColor);
+		*///?} else {
+		context.centeredText(client.font, text, x - 1, y, outlineColor);
+		context.centeredText(client.font, text, x + 1, y, outlineColor);
+		context.centeredText(client.font, text, x, y - 1, outlineColor);
+		context.centeredText(client.font, text, x, y + 1, outlineColor);
 
-		context.drawCenteredTextWithShadow(client.textRenderer, text, x, y, textColor);
+		context.centeredText(client.font, text, x, y, textColor);
+		//?}
 	}
 }
