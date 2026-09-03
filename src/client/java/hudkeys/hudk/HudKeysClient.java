@@ -75,7 +75,11 @@ public class HudKeysClient implements ClientModInitializer {
 	private void renderHud(GuiGraphicsExtractor context) {
 	//?}
 		Minecraft client = Minecraft.getInstance();
-		if (client.player == null || client.options.hideGui)
+		//? if <=26.1.2 {
+		/*if (client.player == null || client.options.hideGui)
+		*///?} else {
+		if (client.player == null || client.gui.hud.isHidden())
+		//?}
 			return;
 
 		int width = client.getWindow().getGuiScaledWidth();
