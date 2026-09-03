@@ -33,8 +33,23 @@ public class ModMenuIntegration implements ModMenuApi {
                     .setSaveConsumer(newValue -> HudConfig.getInstance().yOffset = newValue)
                     .build());
 
-            builder.setSavingRunnable(() -> {
-            });
+            // Scale
+            general.addEntry(entryBuilder.startFloatField(Component.literal("Scale"), HudConfig.getInstance().scale)
+                    .setDefaultValue(0.6f)
+                    .setMin(0.1f)
+                    .setMax(3.0f)
+                    .setTooltip(Component.literal("Key box display scale. Default is 0.6."))
+                    .setSaveConsumer(newValue -> HudConfig.getInstance().scale = newValue)
+                    .build());
+
+            // Show Unpressed Keys
+            general.addEntry(entryBuilder.startBooleanToggle(Component.literal("Show Unpressed Keys"), HudConfig.getInstance().showUnpressedKeys)
+                    .setDefaultValue(true)
+                    .setTooltip(Component.literal("Whether to show key boxes even when the key is not pressed."))
+                    .setSaveConsumer(newValue -> HudConfig.getInstance().showUnpressedKeys = newValue)
+                    .build());
+
+            builder.setSavingRunnable(HudConfig::save);
 
             return builder.build();
         };

@@ -41,7 +41,10 @@ public class HudKeysClient implements ClientModInitializer {
 			if (isAttackPressed && !wasAttackPressed) {
 				lastAttackTick = currentTick;
 				if (currentTick - lastSwapTick <= 1) {
-					greenFlashTicks[client.player.getInventory().getSelectedSlot()] = 15;
+					int selectedSlot = client.player.getInventory().getSelectedSlot();
+					if (selectedSlot >= 0 && selectedSlot < 9) {
+						greenFlashTicks[selectedSlot] = 15;
+					}
 				}
 			}
 			wasAttackPressed = isAttackPressed;
@@ -51,7 +54,9 @@ public class HudKeysClient implements ClientModInitializer {
 				if (previousSlot != -1) {
 					lastSwapTick = currentTick;
 					if (currentTick - lastAttackTick <= 1) {
-						greenFlashTicks[currentSlot] = 15;
+						if (currentSlot >= 0 && currentSlot < 9) {
+							greenFlashTicks[currentSlot] = 15;
+						}
 					}
 				}
 				previousSlot = currentSlot;
@@ -97,6 +102,11 @@ public class HudKeysClient implements ClientModInitializer {
 	private void renderKey(GuiGraphicsExtractor context, KeyMapping key, int x, int y, int slotIndex) {
 	//?}
 		boolean isPressed = key.isDown();
+		HudConfig config = HudConfig.getInstance();
+		if (!config.showUnpressedKeys && !isPressed && greenFlashTicks[slotIndex] <= 0) {
+			return;
+		}
+
 		String label = key.getTranslatedKeyMessage().getString();
 
 		int backgroundColor;
@@ -112,7 +122,7 @@ public class HudKeysClient implements ClientModInitializer {
 		renderRoundedRect(context, x - 1, y - 1, boxSize + 2, boxSize + 2, borderColor);
 		renderRoundedRect(context, x, y, boxSize, boxSize, backgroundColor);
 
-		float scale = HudConfig.getInstance().scale;
+		float scale = config.scale;
 
 		context.pose().pushMatrix();
 		context.pose().translate(x + (boxSize / 2f), y + (boxSize / 2f) + 1);
@@ -128,7 +138,6 @@ public class HudKeysClient implements ClientModInitializer {
 	*///?} else {
 	private void renderRoundedRect(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
 	//?}
-		context.fill(x + 1, y, x + width - 1, y + height, color);
 		context.fill(x + 1, y, x + width - 1, y + height, color);
 		context.fill(x, y + 1, x + 1, y + height - 1, color);
 		context.fill(x + width - 1, y + 1, x + width, y + height - 1, color);

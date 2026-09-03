@@ -14,11 +14,8 @@
 	},
 	"license": "GPL-3.0-or-later",
 	"icon": "assets/hudk/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"hudkeys.hudk.HudKeys"
-		],
 		"client": [
 			"hudkeys.hudk.HudKeysClient"
 		],

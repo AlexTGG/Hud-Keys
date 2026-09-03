@@ -33,20 +33,30 @@ public class HudConfig {
         if (CONFIG_FILE.exists()) {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
                 instance = GSON.fromJson(reader, HudConfig.class);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.err.println("Failed to load Hud Keys config!");
                 e.printStackTrace();
-                instance = new HudConfig();
             }
-        } else {
+        }
+        if (instance == null) {
             instance = new HudConfig();
             save();
+        } else {
+            if (Float.isNaN(instance.scale) || instance.scale <= 0.05f) {
+                instance.scale = 0.6f;
+            }
         }
     }
 
     public static void save() {
-        try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
-            GSON.toJson(instance, writer);
+        try {
+            File parent = CONFIG_FILE.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+            try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
+                GSON.toJson(instance, writer);
+            }
         } catch (IOException e) {
             System.err.println("Failed to save Hud Keys config!");
             e.printStackTrace();
