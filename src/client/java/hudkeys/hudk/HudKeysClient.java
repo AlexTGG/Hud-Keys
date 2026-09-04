@@ -8,10 +8,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 //? if <=1.21.11 {
-/*import net.minecraft.client.gui.GuiGraphics;
-*///?} else {
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-//?}
+import net.minecraft.client.gui.GuiGraphics;
+//?} else {
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
+*///?}
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 
@@ -70,16 +70,16 @@ public class HudKeysClient implements ClientModInitializer {
 	}
 
 	//? if <=1.21.11 {
-	/*private void renderHud(GuiGraphics context) {
-	*///?} else {
-	private void renderHud(GuiGraphicsExtractor context) {
-	//?}
+	private void renderHud(GuiGraphics context) {
+	//?} else {
+	/*private void renderHud(GuiGraphicsExtractor context) {
+	*///?}
 		Minecraft client = Minecraft.getInstance();
 		//? if <=26.1.2 {
-		/*if (client.player == null || client.options.hideGui)
-		*///?} else {
-		if (client.player == null || client.gui.hud.isHidden())
-		//?}
+		if (client.player == null || client.options.hideGui)
+		//?} else {
+		/*if (client.player == null || client.gui.hud.isHidden())
+		*///?}
 			return;
 
 		int width = client.getWindow().getGuiScaledWidth();
@@ -100,18 +100,20 @@ public class HudKeysClient implements ClientModInitializer {
 		}
 	}
 
+
 	//? if <=1.21.11 {
-	/*private void renderKey(GuiGraphics context, KeyMapping key, int x, int y, int slotIndex) {
-	*///?} else {
-	private void renderKey(GuiGraphicsExtractor context, KeyMapping key, int x, int y, int slotIndex) {
-	//?}
+	private void renderKey(GuiGraphics context, KeyMapping key, int x, int y, int slotIndex) {
+		//?} else {
+		/*private void renderKey(GuiGraphicsExtractor context, KeyMapping key, int x, int y, int slotIndex) {
+		 *///?}
 		boolean isPressed = key.isDown();
 		HudConfig config = HudConfig.getInstance();
 		if (!config.showUnpressedKeys && !isPressed && greenFlashTicks[slotIndex] <= 0) {
 			return;
 		}
 
-		String label = key.getTranslatedKeyMessage().getString();
+		Minecraft client = Minecraft.getInstance();
+		String label = getFormattedKeyName(key);
 
 		int backgroundColor;
 		if (greenFlashTicks[slotIndex] > 0) {
@@ -126,7 +128,10 @@ public class HudKeysClient implements ClientModInitializer {
 		renderRoundedRect(context, x - 1, y - 1, boxSize + 2, boxSize + 2, borderColor);
 		renderRoundedRect(context, x, y, boxSize, boxSize, backgroundColor);
 
-		float scale = config.scale;
+		// Clamp scale down if text + outline width exceeds the inner box bounds
+		float visualTextWidth = client.font.width(label) + 2f;
+		float maxAllowedWidth = boxSize - 2f;
+		float scale = Math.min(config.scale, maxAllowedWidth / visualTextWidth);
 
 		context.pose().pushMatrix();
 		context.pose().translate(x + (boxSize / 2f), y + (boxSize / 2f) + 1);
@@ -137,39 +142,67 @@ public class HudKeysClient implements ClientModInitializer {
 		context.pose().popMatrix();
 	}
 
+	private String getFormattedKeyName(KeyMapping key) {
+		String label = key.getTranslatedKeyMessage().getString();
+		String lower = label.toLowerCase();
+		return switch (lower) {
+			case "left shift", "lshift" -> "LS";
+			case "right shift", "rshift" -> "RS";
+			case "left control", "left ctrl", "lctrl" -> "LC";
+			case "right control", "right ctrl", "rctrl" -> "RC";
+			case "left alt", "lalt" -> "LA";
+			case "right alt", "ralt" -> "RA";
+			case "caps lock" -> "CAPS";
+			case "space" -> "SPC";
+			case "button 1", "left button" -> "M1";
+			case "button 2", "right button" -> "M2";
+			case "button 3", "middle button" -> "M3";
+			case "button 4" -> "M4";
+			case "button 5" -> "M5";
+			case "backspace" -> "BS";
+			default -> {
+				if (lower.startsWith("keypad ")) {
+					yield "KP" + label.substring(7);
+				}
+				yield label;
+			}
+		};
+	}
+
+
 	//? if <=1.21.11 {
-	/*private void renderRoundedRect(GuiGraphics context, int x, int y, int width, int height, int color) {
-	*///?} else {
-	private void renderRoundedRect(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
-	//?}
+	private void renderRoundedRect(GuiGraphics context, int x, int y, int width, int height, int color) {
+	//?} else {
+	/*private void renderRoundedRect(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
+	*///?}
 		context.fill(x + 1, y, x + width - 1, y + height, color);
 		context.fill(x, y + 1, x + 1, y + height - 1, color);
 		context.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
 	}
 
 	//? if <=1.21.11 {
-	/*private void renderOutlinedText(GuiGraphics context, String text, int x, int y) {
-	*///?} else {
-	private void renderOutlinedText(GuiGraphicsExtractor context, String text, int x, int y) {
-	//?}
+	private void renderOutlinedText(GuiGraphics context, String text, int x, int y) {
+	//?} else {
+	/*private void renderOutlinedText(GuiGraphicsExtractor context, String text, int x, int y) {
+	*///?}
 		Minecraft client = Minecraft.getInstance();
 		int outlineColor = 0xFF000000;
 		int textColor = 0xFFFFFFFF;
 
 		//? if <=1.21.11 {
-		/*context.drawCenteredString(client.font, text, x - 1, y, outlineColor);
+		context.drawCenteredString(client.font, text, x - 1, y, outlineColor);
 		context.drawCenteredString(client.font, text, x + 1, y, outlineColor);
 		context.drawCenteredString(client.font, text, x, y - 1, outlineColor);
 		context.drawCenteredString(client.font, text, x, y + 1, outlineColor);
 		
 		context.drawCenteredString(client.font, text, x, y, textColor);
-		*///?} else {
-		context.centeredText(client.font, text, x - 1, y, outlineColor);
+		//?} else {
+		/*context.centeredText(client.font, text, x - 1, y, outlineColor);
 		context.centeredText(client.font, text, x + 1, y, outlineColor);
 		context.centeredText(client.font, text, x, y - 1, outlineColor);
 		context.centeredText(client.font, text, x, y + 1, outlineColor);
 
 		context.centeredText(client.font, text, x, y, textColor);
-		//?}
+		*///?}
 	}
 }
