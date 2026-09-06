@@ -1,40 +1,60 @@
-# gradle
-
+# Gradle & Build Artifacts
 .gradle/
 build/
+**/build/
 out/
 classes/
+bin/
+*.class
 
-# eclipse
+# Built JARs (allow gradle wrapper)
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
 
-*.launch
+# Fabric & Minecraft
+run/
+**/run/
+logs/
+**/logs/
+crash-reports/
+**/crash-reports/
+*.log
+*.log.gz
 
-# idea
+# Java & Crash Dumps
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
 
+# macOS
+.DS_Store
+**/.DS_Store
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# IntelliJ IDEA
 .idea/
 *.iml
 *.ipr
 *.iws
 
-# vscode
-
-.settings/
+# VS Code
 .vscode/
-bin/
-.classpath
+
+# Eclipse
 .project
+.classpath
+.settings/
+*.launch
 
-# macos
+# Stonecutter
+.stonecutter/
 
-*.DS_Store
-
-# fabric
-
-run/
-
-# java
-
-hs_err_*.log
-replay_*.log
-*.hprof
-*.jfr
+# Temporary / Swap files
+*~
+*.swp
+*.swo
